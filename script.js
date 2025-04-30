@@ -25,7 +25,6 @@ const imagesPreviewContainer = document.getElementById('images-preview-container
 // Elementos de la lista de productos (Master/Supervisor)
 const productList = document.getElementById('product-list');
 const productManagementSection = document.getElementById('product-management');
-const userManagementSection = document.getElementById('user-management'); // Asegúrate de que esta línea exista
 
 // Elementos de gestión de usuarios (Master/Supervisor)
 const newUserInput = document.getElementById('new-username');
@@ -33,6 +32,8 @@ const newPasswordInput = document.getElementById('new-password');
 const newUserRole = document.getElementById('new-role');
 const createUserButton = document.getElementById('create-user-button');
 const userMessage = document.getElementById('user-message');
+const userList = document.getElementById('user-list');
+const userListSection = document.getElementById('user-list-section');
 
 // Elementos del panel de afiliado
 const affiliateProductList = document.getElementById('affiliate-product-list');
@@ -120,7 +121,12 @@ function login() {
             masterSupervisorPanel.style.display = 'block';
             affiliatePanel.style.display = 'none';
             loadProductsForMasterSupervisor();
-            userManagementSection.style.display = 'block'; // Mostrar siempre para master y supervisor
+            loadUserList();
+            if (loggedInUser.role === 'master') {
+                userManagementSection.style.display = 'block';
+            } else {
+                userManagementSection.style.display = 'none';
+            }
         } else {
             masterSupervisorPanel.style.display = 'none';
             affiliatePanel.style.display = 'block';
@@ -285,6 +291,9 @@ function handlePublishProduct() {
             showMessage('Artículo publicado con éxito.', formMessage);
             clearProductForm();
             loadProductsForMasterSupervisor();
+            if (loggedInUser.role === 'affiliate') {
+                loadProductsForAffiliate();
+            }
         })
         .catch(error => {
             showMessage('Error al cargar las imágenes.', formMessage, 'red');
@@ -384,12 +393,15 @@ function saveChanges(productId) {
                 showMessage('Cambios guardados con éxito.', formMessage);
                 clearProductForm();
                 // Restaurar el texto y el event listener del botón "Publicar"
-                publishButton.textContent = 'Publicar';
+                publishButton.textContent = 'Publicar Artículo';
                 publishButton.removeEventListener('click', () => {
                     saveChanges(productId);
                 });
                 publishButton.addEventListener('click', handlePublishProduct);
                 loadProductsForMasterSupervisor(); // Recargar la lista de productos
+                if (loggedInUser.role === 'affiliate') {
+                    loadProductsForAffiliate();
+                }
             } else {
                 showMessage('Producto no encontrado.', formMessage, 'red');
             }
@@ -416,13 +428,68 @@ function deleteProduct(event) {
     saveProducts();
     showMessage('Producto eliminado con éxito.', formMessage);
     loadProductsForMasterSupervisor(); // Recargar la lista de productos
+    if (loggedInUser.role === 'affiliate') {
+        loadProductsForAffiliate();
+    }
 }
 
+/**
+ * Carga la lista de usuarios en la interfaz.
+ */
+function loadUserList() {
+    userList.innerHTML = ''; // Limpiar la lista
+    if (users.length > 0) {
+        users.forEach(user => {
+            const userItem = document.createElement('li');
+            userItem.className = 'py-2 border-b border-gray-200';
+            userItem.innerHTML = `<span class="font-semibold">${user.username}</span> - <span class="text-gray-600">${user.role}</span>`;
+            userList.appendChild(userItem);
+        });
+        userListSection.style.display = 'block'; // Mostrar la sección
+    } else {
+        userListSection.style.display = 'none'; // Ocultar si no hay usuarios
+    }
+}
+
+/**
+ * Crea un nuevo usuario (Master y Supervisor).
+ */
+function createUser() {
+    const username = newUserInput.value.trim();
+    const password = newPasswordInput.value.trim();
+    const role = newUserRole.value;
+
+    if (!username || !password || !role) {
+        showMessage('Por favor, complete todos los campos.', userMessage, 'red');
+        return;
+    }
+
+    const userExists = users.find(u => u.username === username);
+    if (userExists) {
+        showMessage('El nombre de usuario ya existe.', userMessage, 'red');
+        return;
+    }
+
+    const newUser = {
+        username: username,
+        password: password,
+        role: role,
+    };
+
+    users.push(newUser);
+    saveUsers();
+    showMessage('Usuario creado con éxito.', userMessage);
+    newUserInput.value = '';
+    newPasswordInput.value = '';
+    newUserRole.value = 'affiliate'; // Reset to default
+    loadUserList();
+}
 
 
 // Event listeners
 loginButton.addEventListener('click', login);
 publishButton.addEventListener('click', handlePublishProduct);
+createUserButton.addEventListener('click', createUser);
 
 // Cargar datos iniciales
 const storedUser = localStorage.getItem('loggedInUser');
@@ -434,7 +501,12 @@ if (storedUser) {
         masterSupervisorPanel.style.display = 'block';
         affiliatePanel.style.display = 'none';
         loadProductsForMasterSupervisor();
-        userManagementSection.style.display = 'block'; // Mostrar siempre para master y supervisor
+        loadUserList();
+        if (loggedInUser.role === 'master') {
+            userManagementSection.style.display = 'block';
+        } else {
+            userManagementSection.style.display = 'none';
+        }
     } else {
         masterSupervisorPanel.style.display = 'none';
         affiliatePanel.style.display = 'block';
