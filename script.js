@@ -108,6 +108,8 @@ function login() {
     const username = usernameInput.value.trim();
     const password = passwordInput.value.trim();
 
+    console.log('Intento de inicio de sesión con:', username, password); // NUEVO LOG
+
     const user = users.find(u => u.username === username && u.password === password);
     if (user) {
         loggedInUser = user;
@@ -139,11 +141,14 @@ function login() {
  * Carga los productos en la interfaz para Master y Supervisor.
  */
 function loadProductsForMasterSupervisor() {
+    console.log('Función loadProductsForMasterSupervisor llamada'); // NUEVO LOG
     productList.innerHTML = '';
     let productsToDisplay = products;
     if (loggedInUser.role === 'supervisor') {
         productsToDisplay = products.filter(p => p.uploadedBy === loggedInUser.username);
     }
+
+    console.log('Productos a mostrar:', productsToDisplay); // NUEVO LOG
 
     productsToDisplay.forEach(product => {
         const productCard = document.createElement('div');
@@ -429,6 +434,7 @@ publishButton.addEventListener('click', handlePublishProduct);
 const storedUser = localStorage.getItem('loggedInUser');
 if (storedUser) {
     loggedInUser = JSON.parse(storedUser);
+    console.log('Usuario logueado:', loggedInUser); // NUEVO LOG
     loginSection.style.display = 'none';
     if (loggedInUser.role === 'master' || loggedInUser.role === 'supervisor') {
         masterSupervisorPanel.style.display = 'block';
@@ -447,3 +453,7 @@ if (storedUser) {
     masterSupervisorPanel.style.display = 'none';
     affiliatePanel.style.display = 'none';
 }
+
+console.log('Usuarios cargados:', users); // NUEVO LOG
+console.log('Productos cargados:', products); // NUEVO LOG
+
