@@ -6,7 +6,8 @@
     <title>Plataforma para Afiliados</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css"> <style>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -36,6 +37,12 @@
                 </select>
             </div>
             <button id="create-user-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Crear Usuario</button>
+        </section>
+
+        <section id="user-list-section" class="bg-white rounded shadow-md p-6 mb-8" style="display: none;">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Lista de Usuarios</h2>
+            <ul id="user-list" class="list-none p-0">
+                </ul>
         </section>
 
         <section class="bg-white rounded shadow-md p-6 mb-8">
@@ -97,5 +104,6 @@
         </section>
     </section>
 
-    <script src="script.js"></script> </body>
+    <script src="script.js"></script>
+</body>
 </html>
