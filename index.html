@@ -69,7 +69,7 @@
 
         /* Nuevos estilos para mejorar el diseño responsivo */
         .container {
-            max-width: 1200px;  /* Limita el ancho del contenedor principal */
+            max-width: 1200px;
             margin-left: auto;
             margin-right: auto;
             padding-left: 1rem;
@@ -78,7 +78,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Hace las columnas más flexibles */
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1rem;
         }
 
@@ -90,6 +90,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease-in-out;
+            height: 100%; /* Asegura que todas las tarjetas tengan la misma altura */
         }
 
         .card:hover {
@@ -106,6 +107,7 @@
         .card-description {
             color: #666;
             margin-bottom: 0.75rem;
+            flex-grow: 1; /* Permite que la descripción se expanda para llenar el espacio */
         }
 
         .price {
@@ -123,7 +125,7 @@
             text-align: center;
             cursor: pointer;
             transition: background-color 0.3s ease-in-out;
-            margin-top: auto; /* Empuja el botón al fondo de la tarjeta */
+            margin-top: auto;
         }
 
         .publish-button:hover {
@@ -137,7 +139,7 @@
         }
 
         .image-preview {
-            width: 80px;  /* Ajusta el tamaño de las imágenes de vista previa */
+            width: 80px;
             height: 80px;
             margin-right: 0.5rem;
             margin-bottom: 0.5rem;
