@@ -25,24 +25,25 @@
     <section id="master-supervisor-panel" class="container mx-auto mt-10" style="display: none;">
         <h1 class="text-2xl font-semibold text-gray-800 mb-4">Panel de Master/Supervisor</h1>
 
-        <section id="user-management" class="bg-white rounded shadow-md p-6 mb-8" style="display: none;">
+        <section id="user-management" class="bg-white rounded shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Usuarios</h2>
             <div id="user-message" class="text-green-500 text-sm mb-2" style="display: none;"></div>
             <div class="flex space-x-4 mb-4">
                 <input type="text" id="new-username" placeholder="Nuevo Usuario" class="w-1/3 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <input type="password" id="new-password" placeholder="Nueva Contraseña" class="w-1/3 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <select id="new-role" class="w-1/3 px-4 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="afiliado" selected>Afiliado</option>
                     <option value="supervisor">Supervisor</option>
-                    <option value="afiliado">Afiliado</option>
                 </select>
             </div>
-            <button id="create-user-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Crear Usuario</button>
-        </section>
+            <button id="create-user-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-4">Crear Usuario</button>
 
-        <section id="user-list-section" class="bg-white rounded shadow-md p-6 mb-8" style="display: none;">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Lista de Usuarios</h2>
-            <ul id="user-list" class="list-none p-0">
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">Lista de Usuarios</h3>
+            <ul id="user-list" class="list-none p-0 mb-4">
                 </ul>
+            <button id="view-users-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Ver todos los usuarios
+            </button>
         </section>
 
         <section class="bg-white rounded shadow-md p-6 mb-8">
@@ -75,11 +76,14 @@
             <button id="publish-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Publicar Artículo</button>
         </section>
 
-        <section id="product-management" class="bg-white rounded shadow-md p-6">
+        <section id="product-management" class="bg-white rounded shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Lista de Productos</h2>
             <div id="product-list" class="grid-container">
                 </div>
         </section>
+
+        <button id="logout-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-8">Cerrar Sesión</button>
+
     </section>
 
     <section id="affiliate-panel" class="container mx-auto mt-10" style="display: none;">
