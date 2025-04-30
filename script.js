@@ -1,4 +1,4 @@
-Verificar el localStorage en el navegador:Abre la página web en tu navegador.Abre las herramientas de desarrollo del navegador (generalmente presionando F12).Ve a la pestaña "Aplicación" (o "Almacenamiento" en algunos navegadores).En el menú de la izquierda, expande "Almacenamiento Local" y selecciona el dominio de tu página.Verifica si hay una clave llamada "users" y si su valor es un array JSON con el usuario "master123". Si no está, o si el formato es incorrecto, eso podría ser la causa del problema.Agregar más logs de consola:Vamos a agregar algunos console.log() adicionales al código JavaScript para obtener más información sobre lo que está sucediendo. Aquí está el código modificado:let users = JSON.parse(localStorage.getItem('users')) || [
+let users = JSON.parse(localStorage.getItem('users')) || [
     { username: 'master123', password: 'masterpass', role: 'master' }
 ];
 let products = JSON.parse(localStorage.getItem('products')) || [];
@@ -45,7 +45,6 @@ const publishedProductsSection = document.getElementById('published-products');
  * Muestra un mensaje en la interfaz.
  * @param {string} message - El mensaje a mostrar.
  * @param {HTMLElement} element - El elemento donde mostrar el mensaje.
- * @param {string} color - El color del mensaje (e.g., 'green', 'red').
  */
 function showMessage(message, element, color = 'green') {
     element.textContent = message;
@@ -307,7 +306,6 @@ function clearProductForm() {
 
 /**
  * Edita un producto existente.
- * @param {Event} event - El evento del click del botón.
  */
 function editProduct(event) {
     const productId = event.target.closest('.grid-item').dataset.productId;
@@ -347,7 +345,6 @@ function editProduct(event) {
 
 /**
  * Guarda los cambios realizados a un producto editado.
- * @param {string} productId - El ID del producto a guardar.
  */
 function saveChanges(productId) {
     const updatedName = productNameInput.value.trim();
@@ -408,7 +405,6 @@ function saveChanges(productId) {
 
 /**
  * Borra un producto.
- * @param {Event} event - El evento del click del botón.
  */
 function deleteProduct(event) {
     const productId = event.target.closest('.grid-item').dataset.productId;
@@ -457,4 +453,3 @@ if (storedUser) {
 
 console.log('Usuarios cargados:', users); // NUEVO LOG
 console.log('Productos cargados:', products); // NUEVO LOG
-
