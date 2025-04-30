@@ -1,4 +1,4 @@
-let users = JSON.parse(localStorage.getItem('users')) || [
+Verificar el localStorage en el navegador:Abre la página web en tu navegador.Abre las herramientas de desarrollo del navegador (generalmente presionando F12).Ve a la pestaña "Aplicación" (o "Almacenamiento" en algunos navegadores).En el menú de la izquierda, expande "Almacenamiento Local" y selecciona el dominio de tu página.Verifica si hay una clave llamada "users" y si su valor es un array JSON con el usuario "master123". Si no está, o si el formato es incorrecto, eso podría ser la causa del problema.Agregar más logs de consola:Vamos a agregar algunos console.log() adicionales al código JavaScript para obtener más información sobre lo que está sucediendo. Aquí está el código modificado:let users = JSON.parse(localStorage.getItem('users')) || [
     { username: 'master123', password: 'masterpass', role: 'master' }
 ];
 let products = JSON.parse(localStorage.getItem('products')) || [];
@@ -109,6 +109,7 @@ function login() {
     const password = passwordInput.value.trim();
 
     console.log('Intento de inicio de sesión con:', username, password); // NUEVO LOG
+    console.log('Usuarios disponibles:', users); // NUEVO LOG
 
     const user = users.find(u => u.username === username && u.password === password);
     if (user) {
