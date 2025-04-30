@@ -1,580 +1,357 @@
-let users = JSON.parse(localStorage.getItem('users')) || [
-    { username: 'master123', password: 'masterpass', role: 'master' }
+const users = [
+    { username: "master123", password: "masterpass", role: "master" },
+    { username: "supervisor123", password: "supervisorpass", role: "supervisor" },
+    { username: "affiliate123", password: "affiliatepass", role: "affiliate" },
 ];
-let products = JSON.parse(localStorage.getItem('products')) || [];
-let loggedInUser = null;
 
-const loginSection = document.getElementById('login-section');
-const masterSupervisorPanel = document.getElementById('master-supervisor-panel');
-const affiliatePanel = document.getElementById('affiliate-panel');
-const loginButton = document.getElementById('login-button');
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-const loginError = document.getElementById('login-error');
-
-// Elementos del formulario de subida de productos
-const productNameInput = document.getElementById('product-name');
-const productDescriptionInput = document.getElementById('product-description');
-const suggestedPriceInput = document.getElementById('suggested-price');
-const affiliatePriceInput = document.getElementById('affiliate-price');
-const productImagesInput = document.getElementById('product-images');
-const publishButton = document.getElementById('publish-button');
-const formMessage = document.getElementById('form-message');
-const imagesPreviewContainer = document.getElementById('images-preview-container');
-
-// Elementos de la lista de productos (Master/Supervisor)
-const productList = document.getElementById('product-list');
-const productManagementSection = document.getElementById('product-management');
-
-// Elementos de gestión de usuarios (Master/Supervisor)
-const newUserInput = document.getElementById('new-username');
-const newPasswordInput = document.getElementById('new-password');
-const newUserRole = document.getElementById('new-role');
-const createUserButton = document.getElementById('create-user-button');
-const userMessage = document.getElementById('user-message');
-const userList = document.getElementById('user-list');
-const viewUsersButton = document.getElementById('view-users-button');
-
-
-// Elementos del panel de afiliado
-const affiliateProductList = document.getElementById('affiliate-product-list');
-const publishedProductsList = document.getElementById('affiliate-published-list');
-const notPublishedProductsList = document.getElementById('random-product-list');
-const publishedProductsSection = document.getElementById('published-products');
-const logoutButton = document.getElementById('logout-button');
-
-
-// Funciones de utilidad
-/**
- * Muestra un mensaje en la interfaz.
- * @param {string} message - El mensaje a mostrar.
- * @param {HTMLElement} element - El elemento donde mostrar el mensaje.
- */
-function showMessage(message, element, color = 'green') {
-    element.textContent = message;
-    element.style.color = color;
-    element.style.display = 'block';
-    setTimeout(() => {
-        element.style.display = 'none';
-    }, 3000);
-}
-
-/**
- * Genera un ID único para cada producto.
- * @returns {string} - Un ID único.
- */
-function generateId() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
-
-/**
- * Guarda los productos en el localStorage.
- */
-function saveProducts() {
-    localStorage.setItem('products', JSON.stringify(products));
-}
-
-/**
- * Guarda los usuarios en el local storage
- */
-function saveUsers() {
-    localStorage.setItem('users', JSON.stringify(users));
-}
-
-/**
- * Valida el formulario de inicio de sesión.
- * @returns {boolean} - Indica si el formulario es válido.
- */
-function validateLoginForm() {
-    if (!usernameInput.value.trim()) {
-        loginError.textContent = 'Por favor, ingrese su nombre de usuario.';
-        loginError.style.display = 'block';
-        return false;
+const products = [
+    {
+        name: "Producto 1",
+        description: "Descripción del Producto 1",
+        suggestedPrice: 100,
+        affiliatePrice: 80,
+        images: ["imagen1.jpg", "imagen2.jpg"],
+        id: "1",
+    },
+    {
+        name: "Producto 2",
+        description: "Descripción del Producto 2",
+        suggestedPrice: 200,
+        affiliatePrice: 160,
+        images: ["imagen3.jpg", "imagen4.jpg"],
+        id: "2",
+    },
+    {
+        name: "Producto 3",
+        description: "Descripción del Producto 3",
+        suggestedPrice: 150,
+        affiliatePrice: 120,
+        images: ["imagen5.jpg"],
+        id: "3",
+    },
+    {
+        name: "Producto 4",
+        description: "Descripción del Producto 4",
+        suggestedPrice: 250,
+        affiliatePrice: 200,
+        images: ["imagen6.jpg"],
+        id: "4"
+    },
+    {
+        name: "Producto 5",
+        description: "Descripción del Producto 5",
+        suggestedPrice: 300,
+        affiliatePrice: 240,
+        images: ["imagen7.jpg"],
+        id: "5"
     }
-    if (!passwordInput.value.trim()) {
-        loginError.textContent = 'Por favor, ingrese su contraseña.';
-        loginError.style.display = 'block';
-        return false;
-    }
-    loginError.style.display = 'none';
-    return true;
-}
+];
 
-/**
- * Realiza el inicio de sesión del usuario.
- */
-function login() {
-    if (!validateLoginForm()) {
-        return;
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("login-section");
+    const masterSupervisorPanel = document.getElementById("master-supervisor-panel");
+    const affiliatePanel = document.getElementById("affiliate-panel");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const loginButton = document.getElementById("login-button");
+    const loginError = document.getElementById("login-error");
+    const userManagementSection = document.getElementById("user-management");
+    const productUploadForm = document.getElementById("product-upload-form");
+    const newUsernameInput = document.getElementById("new-username");
+    const newPasswordInput = document.getElementById("new-password");
+    const newRoleSelect = document.getElementById("new-role");
+    const createUserButton = document.getElementById("create-user-button");
+    const userMessage = document.getElementById("user-message");
+    const productListContainer = document.getElementById("product-list");
+    const affiliateProductList = document.getElementById("affiliate-product-list");
+    const publishButton = document.getElementById("publish-button");
+    const productNameInput = document.getElementById("product-name");
+    const productDescriptionInput = document.getElementById("product-description");
+    const suggestedPriceInput = document.getElementById("suggested-price");
+    const affiliatePriceInput = document.getElementById("affiliate-price");
+    const productImagesInput = document.getElementById("product-images");
+    const formMessage = document.getElementById("form-message");
+    const viewUsersButton = document.getElementById("view-users-button");
+    const userList = document.getElementById("user-list");
+    const logoutButtons = document.querySelectorAll(".logout-button"); // Selecciona todos los botones de logout
+    const randomProductList = document.getElementById("random-product-list");
+    let loggedInUser = null;
+    const MAX_RANDOM_PRODUCTS = 5; // Máximo de productos aleatorios a mostrar
+    const publishedProducts = new Set();  // Track published product IDs
+    const affiliatePublishedList = document.getElementById("affiliate-published-list");
+    const showPublishedProductsButton = document.getElementById("published-products-button"); //Boton NO EXISTE
+
+    // Función para mostrar un mensaje
+    function showMessage(element, message, type = "success") {
+        element.textContent = message;
+        element.style.color = type === "success" ? "green" : "red";
+        element.style.display = "block";
+        setTimeout(() => {
+            element.style.display = "none";
+        }, 3000); // El mensaje desaparece después de 3 segundos
     }
 
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
+    // Función para renderizar la lista de productos
+    function renderProductList(container, productsToRender, userRole = null) {
+        container.innerHTML = ""; // Limpiar el contenedor antes de renderizar
+        productsToRender.forEach((product) => {
+            const productCard = document.createElement("div");
+            productCard.classList.add("bg-white", "rounded-lg", "shadow-md", "p-4", "flex", "flex-col", "transition-transform", "hover:scale-105");
 
-    console.log('Intento de inicio de sesión con:', username, password);
-    console.log('Usuarios disponibles:', users);
+            const imageContainer = document.createElement("div");
+            imageContainer.classList.add("relative", "w-full", "h-48", "mb-4", "overflow-hidden", "rounded-md");
 
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-        loggedInUser = user;
-        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-        loginSection.style.display = 'none';
-        if (loggedInUser.role === 'master' || loggedInUser.role === 'supervisor') {
-            masterSupervisorPanel.style.display = 'block';
-            affiliatePanel.style.display = 'none';
-            loadProductsForMasterSupervisor();
-            loadUserList();
-            if (loggedInUser.role === 'master') {
-                userManagementSection.style.display = 'block';
+            // Mostrar la primera imagen o un mensaje si no hay imágenes
+            if (product.images && product.images.length > 0) {
+                const productImage = document.createElement("img");
+                productImage.src = product.images[0]; // Mostrar la primera imagen
+                productImage.alt = product.name;
+                productImage.classList.add("object-cover", "w-full", "h-full");
+                imageContainer.appendChild(productImage);
             } else {
-                userManagementSection.style.display = 'none';
+                const noImage = document.createElement("div");
+                noImage.classList.add("absolute", "inset-0", "flex", "items-center", "justify-center", "bg-gray-200", "text-gray-500");
+                noImage.textContent = "No Image";
+                imageContainer.appendChild(noImage);
             }
-        } else {
-            masterSupervisorPanel.style.display = 'none';
-            affiliatePanel.style.display = 'block';
-            loadProductsForAffiliate();
-        }
-        usernameInput.value = '';
-        passwordInput.value = '';
-    } else {
-        loginError.textContent = 'Usuario o contraseña incorrectos.';
-        loginError.style.display = 'block';
-    }
-}
 
-/**
- * Carga los productos en la interfaz para Master y Supervisor.
- */
-function loadProductsForMasterSupervisor() {
-    console.log('Función loadProductsForMasterSupervisor llamada');
-    productList.innerHTML = '';
-    let productsToDisplay = products;
-    if (loggedInUser.role === 'supervisor') {
-        productsToDisplay = products.filter(p => p.uploadedBy === loggedInUser.username);
-    }
+            const productName = document.createElement("h3");
+            productName.classList.add("text-xl", "font-semibold", "text-gray-800", "mb-2");
+            productName.textContent = product.name;
 
-    console.log('Productos a mostrar:', productsToDisplay);
+            const productDescription = document.createElement("p");
+            productDescription.classList.add("text-gray-700", "mb-2", "descripcion-producto");
+            productDescription.textContent = product.description;
 
-    productsToDisplay.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'grid-item';
-        productCard.dataset.productId = product.id;
+            const suggestedPrice = document.createElement("p");
+            suggestedPrice.classList.add("text-gray-900", "font-bold", "mb-1");
+            suggestedPrice.textContent = `Precio Sugerido: $${product.suggestedPrice}`;
 
-        // Generar HTML para las imágenes
-        const imagesHtml = product.images.map(img => `<img src="${img}" alt="Producto" class="w-full h-32 object-cover rounded-md mb-2">`).join('');
+            const affiliatePrice = document.createElement("p");
+            affiliatePrice.classList.add("text-green-600", "font-semibold", "mb-4");
+            affiliatePrice.textContent = `Precio para Afiliado: $${product.affiliatePrice}`;
 
-        productCard.innerHTML = `
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">${product.name}</h3>
-            ${imagesHtml}
-            <p class="text-gray-600 mb-1">Precio Sugerido: <span class="font-semibold">${product.suggestedPrice}</span></p>
-            <p class="text-gray-600 mb-1">Precio Afiliado: <span class="font-semibold">${product.affiliatePrice}</span></p>
-            <p class="text-gray-700 descripcion-producto mb-2">${product.description}</p>
-            <div class="flex justify-end gap-2">
-                <button class="edit-button bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Editar</button>
-                <button class="delete-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Borrar</button>
-            </div>
-        `;
-        productList.appendChild(productCard);
-    });
+            productCard.appendChild(imageContainer);
+            productCard.appendChild(productName);
+            productCard.appendChild(productDescription);
+            productCard.appendChild(suggestedPrice);
+            productCard.appendChild(affiliatePrice);
 
-    // Agregar event listeners a los botones "Editar" y "Borrar"
-    const editButtons = productList.querySelectorAll('.edit-button');
-    const deleteButtons = productList.querySelectorAll('.delete-button');
-
-    editButtons.forEach(button => {
-        button.addEventListener('click', editProduct);
-    });
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', deleteProduct);
-    });
-}
-
-/**
- * Carga los productos para el afiliado
- */
-function loadProductsForAffiliate() {
-    affiliateProductList.innerHTML = '';
-    publishedProductsList.innerHTML = '';
-    const userPublishedProducts = JSON.parse(localStorage.getItem(loggedInUser.username + '_published')) || [];
-    let notPublishedProducts = [];
-
-    products.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'grid-item';
-        productCard.dataset.productId = product.id;
-
-        const imagesHtml = product.images.map(img => `<img src="${img}" alt="Producto" class="w-full h-32 object-cover rounded-md mb-2">`).join('');
-
-        productCard.innerHTML = `
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">${product.name}</h3>
-            ${imagesHtml}
-            <p class="text-gray-600 mb-1">Precio Sugerido: <span class="font-semibold">${product.suggestedPrice}</span></p>
-            <p class="text-gray-600 mb-1">Precio Afiliado: <span class="font-semibold">${product.affiliatePrice}</span></p>
-            <p class="text-gray-700 descripcion-producto mb-2">${product.description}</p>
-            <div class="flex gap-2">
-                <button class="copy-description-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Copiar Descripción</button>
-                <button class="download-images-button bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Descargar Imágenes</button>
-                <button class="publish-product-button bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Ya he publicado</button>
-            </div>
-        `;
-        if (userPublishedProducts.includes(product.id)) {
-            publishedProductsList.appendChild(productCard);
-        } else {
-            affiliateProductList.appendChild(productCard);
-            notPublishedProducts.push(product);
-        }
-    });
-    notPublishedProductsList.innerHTML = '';
-    const shuffledProducts = notPublishedProducts.sort(() => 0.5 - Math.random());
-    const randomProducts = shuffledProducts.slice(0, 5);
-    randomProducts.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'grid-item';
-        productCard.dataset.productId = product.id;
-
-        const imagesHtml = product.images.map(img => `<img src="${img}" alt="Producto" class="w-full h-32 object-cover rounded-md mb-2">`).join('');
-
-        productCard.innerHTML = `
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">${product.name}</h3>
-            ${imagesHtml}
-            <p class="text-gray-600 mb-1">Precio Sugerido: <span class="font-semibold">${product.suggestedPrice}</span></p>
-            <p class="text-gray-600 mb-1">Precio Afiliado: <span class="font-semibold">${product.affiliatePrice}</span></p>
-            <p class="text-gray-700 descripcion-producto mb-2">${product.description}</p>
-            <div class="flex gap-2">
-                <button class="copy-description-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Copiar Descripción</button>
-                <button class="download-images-button bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Descargar Imágenes</button>
-                <button class="publish-product-button bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Ya he publicado</button>
-            </div>
-        `;
-        notPublishedProductsList.appendChild(productCard);
-    });
-}
-
-/**
- * Procesa el envío del formulario para subir un nuevo producto.
- */
-function handlePublishProduct() {
-    const name = productNameInput.value.trim();
-    const description = productDescriptionInput.value.trim();
-    const suggestedPrice = parseFloat(suggestedPriceInput.value);
-    const affiliatePrice = parseFloat(affiliatePriceInput.value);
-    const images = Array.from(productImagesInput.files);
-
-    if (!name || !description || isNaN(suggestedPrice) || isNaN(affiliatePrice) || images.length === 0) {
-        showMessage('Por favor, complete todos los campos y seleccione al menos una imagen.', formMessage, 'red');
-        return;
-    }
-
-    const imagePromises = images.map(file => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    });
-
-    Promise.all(imagePromises)
-        .then(imageUrls => {
-            const newProduct = {
-                id: generateId(),
-                name: name,
-                description: description,
-                suggestedPrice: suggestedPrice,
-                affiliatePrice: affiliatePrice,
-                images: imageUrls,
-                uploadedBy: loggedInUser.username,
-                published: false
-            };
-
-            products.push(newProduct);
-            saveProducts();
-            showMessage('Artículo publicado con éxito.', formMessage);
-            clearProductForm();
-            loadProductsForMasterSupervisor();
-            if (loggedInUser.role === 'affiliate') {
-                loadProductsForAffiliate();
-            }
-        })
-        .catch(error => {
-            showMessage('Error al cargar las imágenes.', formMessage, 'red');
-            console.error('Error al cargar imágenes:', error);
-        });
-}
-
-function clearProductForm() {
-    productNameInput.value = '';
-    productDescriptionInput.value = '';
-    suggestedPriceInput.value = '';
-    affiliatePriceInput.value = '';
-    productImagesInput.value = '';
-    imagesPreviewContainer.innerHTML = '';
-}
-
-/**
- * Edita un producto existente.
- */
-function editProduct(event) {
-    const productId = event.target.closest('.grid-item').dataset.productId;
-    const productToEdit = products.find(p => p.id === productId);
-
-    if (!productToEdit) {
-        showMessage('Producto no encontrado.', formMessage, 'red');
-        return;
-    }
-
-    // Cargar los datos del producto en el formulario
-    productNameInput.value = productToEdit.name;
-    productDescriptionInput.value = productToEdit.description;
-    suggestedPriceInput.value = productToEdit.suggestedPrice;
-    affiliatePriceInput.value = productToEdit.affiliatePrice;
-    imagesPreviewContainer.innerHTML = ''; // Limpiar vista previa de imágenes
-
-    // Mostrar las imágenes existentes
-    productToEdit.images.forEach(imageUrl => {
-        const imgPreview = document.createElement('div');
-        imgPreview.className = 'image-preview';
-        imgPreview.innerHTML = `<img src="${imageUrl}" alt="Producto">`;
-        imagesPreviewContainer.appendChild(imgPreview);
-    });
-
-    // Cambiar el texto del botón "Publicar" a "Guardar Cambios"
-    publishButton.textContent = 'Guardar Cambios';
-
-    // Eliminar el event listener anterior del botón "Publicar"
-    publishButton.removeEventListener('click', handlePublishProduct);
-
-    // Agregar un nuevo event listener para guardar los cambios
-    publishButton.addEventListener('click', () => {
-        saveChanges(productId);
-    });
-}
-
-/**
- * Guarda los cambios realizados a un producto editado.
- */
-function saveChanges(productId) {
-    const updatedName = productNameInput.value.trim();
-    const updatedDescription = productDescriptionInput.value.trim();
-    const updatedSuggestedPrice = parseFloat(suggestedPriceInput.value);
-    const updatedAffiliatePrice = parseFloat(affiliatePriceInput.value);
-    const updatedImages = Array.from(productImagesInput.files);
-
-    if (!updatedName || !updatedDescription || isNaN(updatedSuggestedPrice) || isNaN(updatedAffiliatePrice)) {
-        showMessage('Por favor, complete todos los campos.', formMessage, 'red');
-        return;
-    }
-
-    // Si se seleccionaron nuevas imágenes, procesarlas
-    let imagePromises = [];
-    if (updatedImages.length > 0) {
-        imagePromises = updatedImages.map(file => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        });
-    }
-
-    Promise.all(imagePromises)
-        .then(newImageUrls => {
-            // Actualizar los datos del producto
-            const productToUpdateIndex = products.findIndex(p => p.id === productId);
-            if (productToUpdateIndex !== -1) {
-                products[productToUpdateIndex].name = updatedName;
-                products[productToUpdateIndex].description = updatedDescription;
-                products[productToUpdateIndex].suggestedPrice = updatedSuggestedPrice;
-                products[productToUpdateIndex].affiliatePrice = updatedAffiliatePrice;
-                if (newImageUrls.length > 0) {
-                    products[productToUpdateIndex].images = newImageUrls; // Usar nuevas imágenes
-                }
-                saveProducts();
-                showMessage('Cambios guardados con éxito.', formMessage);
-                clearProductForm();
-                // Restaurar el texto y el event listener del botón "Publicar"
-                publishButton.textContent = 'Publicar Artículo';
-                publishButton.removeEventListener('click', () => {
-                    saveChanges(productId);
+            if (userRole === "affiliate") {
+                const publishButton = document.createElement("button");
+                publishButton.classList.add("bg-indigo-500", "hover:bg-indigo-700", "text-white", "font-bold", "py-2", "px-4", "rounded", "focus:outline-none", "focus:shadow-outline");
+                publishButton.textContent = "Publicar";
+                publishButton.addEventListener("click", () => {
+                    if (!publishedProducts.has(product.id)) {
+                        publishedProducts.add(product.id);
+                         // Add to published list
+                        const listItem = document.createElement("li");
+                        listItem.textContent = product.name;
+                        affiliatePublishedList.appendChild(listItem);
+                        showMessage(formMessage, `Producto "${product.name}" publicado para tus clientes.`, "success");
+                       // Aquí puedes agregar lógica para mostrar el producto al cliente del afiliado
+                    } else {
+                         showMessage(formMessage, `Ya has publicado el producto "${product.name}" anteriormente.`, "error");
+                    }
                 });
-                publishButton.addEventListener('click', handlePublishProduct);
-                loadProductsForMasterSupervisor(); // Recargar la lista de productos
-                if (loggedInUser.role === 'affiliate') {
-                    loadProductsForAffiliate();
+                productCard.appendChild(publishButton);
+            }
+            container.appendChild(productCard);
+        });
+    }
+
+    // Función para cargar la lista de productos para master y supervisor
+    function loadProductsForMasterSupervisor() {
+        const productsToDisplay = products.map(product => ({
+            ...product,
+            images: product.images // Mantener las imágenes
+        }));
+        renderProductList(productListContainer, productsToDisplay);
+    }
+
+    // Función para cargar la lista de productos para afiliados
+    function loadProductsForAffiliates() {
+        const productsToDisplay = products.map(product => ({
+            ...product,
+            images: product.images
+        }));
+        renderProductList(affiliateProductList, productsToDisplay, "affiliate");
+    }
+
+    // Función para obtener productos aleatorios
+    function getRandomProducts() {
+        const shuffledProducts = [...products].sort(() => 0.5 - Math.random()); // Shuffle
+        return shuffledProducts.slice(0, Math.min(MAX_RANDOM_PRODUCTS, shuffledProducts.length)); // Get first 5 or less
+    }
+
+    // Función para cargar productos aleatorios
+    function loadRandomProducts() {
+        const randomProductsArray = getRandomProducts();
+        renderProductList(randomProductList, randomProductsArray);
+    }
+
+    // Función para manejar el inicio de sesión
+    function handleLogin() {
+        const username = usernameInput.value;
+        const password = passwordInput.value;
+
+        console.log(`Intento de inicio de sesión con: ${username} ${password}`);
+        console.log("Usuarios disponibles:", users);
+
+        const user = users.find(u => u.username === username && u.password === password);
+
+        if (user) {
+            loggedInUser = user;
+            loginForm.style.display = "none";
+            if (user.role === "master" || user.role === "supervisor") {
+                masterSupervisorPanel.style.display = "block";
+                affiliatePanel.style.display = "none";
+                if (user.role === "master") {
+                    userManagementSection.style.display = "block";
+                } else {
+                    userManagementSection.style.display = "none";
                 }
-            } else {
-                showMessage('Producto no encontrado.', formMessage, 'red');
+                loadProductsForMasterSupervisor();
+            } else if (user.role === "affiliate") {
+                masterSupervisorPanel.style.display = "none";
+                affiliatePanel.style.display = "block";
+                loadProductsForAffiliates();
+                loadRandomProducts();
             }
-        })
-        .catch(error => {
-            showMessage('Error al cargar las imágenes.', formMessage, 'red');
-            console.error('Error al cargar imágenes:', error);
-        });
-}
-
-/**
- * Borra un producto.
- */
-function deleteProduct(event) {
-    const productId = event.target.closest('.grid-item').dataset.productId;
-    const productToDeleteIndex = products.findIndex(p => p.id === productId);
-
-    if (productToDeleteIndex === -1) {
-        showMessage('Producto no encontrado.', formMessage, 'red');
-        return;
-    }
-
-    products.splice(productToDeleteIndex, 1);
-    saveProducts();
-    showMessage('Producto eliminado con éxito.', formMessage);
-    loadProductsForMasterSupervisor(); // Recargar la lista de productos
-    if (loggedInUser.role === 'affiliate') {
-        loadProductsForAffiliate();
-    }
-}
-
-/**
- * Carga la lista de usuarios en la interfaz.
- */
-function loadUserList() {
-    userList.innerHTML = ''; // Limpiar la lista
-    if (users.length > 0) {
-        users.forEach(user => {
-            const userItem = document.createElement('li');
-            userItem.className = 'py-2 border-b border-gray-200 flex justify-between items-center';
-            userItem.innerHTML = `<span class="font-semibold">${user.username}</span> - <span class="text-gray-600">${user.role}</span>`;
-
-             // Agregar botones de suspender y eliminar solo si el usuario logueado es master y no es el mismo usuario
-            if (loggedInUser.role === 'master' && loggedInUser.username !== user.username) {
-                const suspendButton = document.createElement('button');
-                suspendButton.textContent = 'Suspender';
-                suspendButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm';
-                suspendButton.addEventListener('click', () => suspendUser(user.username));
-
-                const deleteButton = document.createElement('button');
-                deleteButton.textContent = 'Eliminar';
-                deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm';
-                deleteButton.addEventListener('click', () => deleteUser(user.username));
-
-                userItem.appendChild(suspendButton);
-                userItem.appendChild(deleteButton);
-            }
-            userList.appendChild(userItem);
-        });
-        userListSection.style.display = 'block'; // Mostrar la sección
-    } else {
-        userListSection.style.display = 'none'; // Ocultar si no hay usuarios
-    }
-}
-
-/**
- * Crea un nuevo usuario (Master y Supervisor).
- */
-function createUser() {
-    const username = newUserInput.value.trim();
-    const password = newPasswordInput.value.trim();
-    const role = newUserRole.value;
-
-    if (!username || !password || !role) {
-        showMessage('Por favor, complete todos los campos.', userMessage, 'red');
-        return;
-    }
-
-    const userExists = users.find(u => u.username === username);
-    if (userExists) {
-        showMessage('El nombre de usuario ya existe.', userMessage, 'red');
-        return;
-    }
-
-    const newUser = {
-        username: username,
-        password: password,
-        role: role,
-        status: 'active' // Agregamos el estado por defecto
-    };
-
-    users.push(newUser);
-    saveUsers();
-    showMessage('Usuario creado con éxito.', userMessage);
-    newUserInput.value = '';
-    newPasswordInput.value = '';
-    newUserRole.value = 'affiliate'; // Reset to default
-    loadUserList();
-}
-
-/**
- * Suspende un usuario
- * @param {string} usernameToSuspend - El nombre de usuario del usuario a suspender.
- */
-function suspendUser(usernameToSuspend) {
-    const userToSuspend = users.find(u => u.username === usernameToSuspend);
-    if (userToSuspend) {
-        userToSuspend.status = 'suspended';
-        saveUsers();
-        showMessage(`Usuario ${usernameToSuspend} suspendido.`, userMessage);
-        loadUserList(); // Recargar la lista para reflejar el cambio
-    } else {
-        showMessage('Usuario no encontrado.', userMessage, 'red');
-    }
-}
-
-/**
- * Elimina un usuario
- * @param {string} usernameToDelete - El nombre de usuario del usuario a eliminar.
- */
-function deleteUser(usernameToDelete) {
-     if (loggedInUser.username === usernameToDelete) {
-        showMessage('No puedes eliminarte a ti mismo.', userMessage, 'red');
-        return;
-    }
-    const userToDeleteIndex = users.findIndex(u => u.username === usernameToDelete);
-    if (userToDeleteIndex !== -1) {
-        users.splice(userToDeleteIndex, 1);
-        saveUsers();
-        showMessage('Usuario eliminado con éxito.', userMessage);
-        loadUserList(); // Recargar la lista para reflejar el cambio
-    } else {
-        showMessage('Usuario no encontrado.', userMessage, 'red');
-    }
-}
-
-
-// Event listeners
-loginButton.addEventListener('click', login);
-publishButton.addEventListener('click', handlePublishProduct);
-createUserButton.addEventListener('click', createUser);
-logoutButton.addEventListener('click', logout);
-viewUsersButton.addEventListener('click', loadUserList);
-
-
-// Cargar datos iniciales
-const storedUser = localStorage.getItem('loggedInUser');
-if (storedUser) {
-    loggedInUser = JSON.parse(storedUser);
-    console.log('Usuario logueado:', loggedInUser);
-    loginSection.style.display = 'none';
-    if (loggedInUser.role === 'master' || loggedInUser.role === 'supervisor') {
-        masterSupervisorPanel.style.display = 'block';
-        affiliatePanel.style.display = 'none';
-        loadProductsForMasterSupervisor();
-        loadUserList();
-        if (loggedInUser.role === 'master') {
-            userManagementSection.style.display = 'block';
         } else {
-            userManagementSection.style.display = 'none';
+            loginError.textContent = "Credenciales incorrectas. Por favor, inténtalo de nuevo.";
+            loginError.style.display = "block";
         }
-    } else {
-        masterSupervisorPanel.style.display = 'none';
-        affiliatePanel.style.display = 'block';
-        loadProductsForAffiliate();
     }
-} else {
-    loginSection.style.display = 'block';
-    masterSupervisorPanel.style.display = 'none';
-    affiliatePanel.style.display = 'none';
-}
 
-console.log('Usuarios cargados:', users);
-console.log('Productos cargados:', products);
+    // Función para crear un nuevo usuario (Solo para Master)
+    function handleCreateUser() {
+        const newUsername = newUsernameInput.value;
+        const newPassword = newPasswordInput.value;
+        const newRole = newRoleSelect.value;
+
+        if (!newUsername || !newPassword || !newRole) {
+            showMessage(userMessage, "Por favor, completa todos los campos.", "error");
+            return;
+        }
+
+        const userExists = users.some(u => u.username === newUsername);
+        if (userExists) {
+            showMessage(userMessage, "El nombre de usuario ya existe. Por favor, elige otro.", "error");
+            return;
+        }
+
+        users.push({ username: newUsername, password: newPassword, role: newRole });
+        showMessage(userMessage, `Usuario "${newUsername}" creado con rol "${newRole}".`, "success");
+        newUsernameInput.value = "";
+        newPasswordInput.value = "";
+        newRoleSelect.value = "affiliate"; // Reset to default
+        loadUserList(); // Update user list
+    }
+
+    function loadUserList() {
+        userList.innerHTML = ""; // Clear the list
+        users.forEach(user => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${user.username} - ${user.role}`;
+            userList.appendChild(listItem);
+        });
+    }
+
+      // Función para manejar el cierre de sesión
+    function handleLogout() {
+        loggedInUser = null; // Clear logged in user
+        loginForm.style.display = "block"; // Show login form
+        masterSupervisorPanel.style.display = "none"; // Hide panels
+        affiliatePanel.style.display = "none";
+        // Reset form fields (optional)
+        usernameInput.value = "";
+        passwordInput.value = "";
+        loginError.style.display = "none";
+        // Clear product lists
+        productListContainer.innerHTML = "";
+        affiliateProductList.innerHTML = "";
+        randomProductList.innerHTML = "";
+        affiliatePublishedList.innerHTML = ""; // Clear published list
+    }
+
+    // Función para manejar la publicación de un producto
+    function handlePublishProduct() {
+        const productName = productNameInput.value;
+        const productDescription = productDescriptionInput.value;
+        const suggestedPrice = parseFloat(suggestedPriceInput.value);
+        const affiliatePrice = parseFloat(affiliatePriceInput.value);
+        const productImages = productImagesInput.files;
+
+        if (!productName || !productDescription || isNaN(suggestedPrice) || isNaN(affiliatePrice) || !productImages || productImages.length === 0) {
+            showMessage(formMessage, "Por favor, completa todos los campos y selecciona al menos una imagen.", "error");
+            return;
+        }
+
+        if (suggestedPrice <= affiliatePrice) {
+            showMessage(formMessage, "El precio sugerido debe ser mayor que el precio para el afiliado.", "error");
+            return;
+        }
+
+        const imageFiles = Array.from(productImages);  // Convert FileList to array
+        const imageNames = imageFiles.map(file => file.name); // Extract file names
+
+        const newProduct = {
+            name: productName,
+            description: productDescription,
+            suggestedPrice: suggestedPrice,
+            affiliatePrice: affiliatePrice,
+            images: imageNames, // Store file names, not File objects
+            id: String(Date.now()), // Simple unique ID
+        };
+
+        products.push(newProduct); // Add to the products array
+        showMessage(formMessage, `Producto "${productName}" publicado con éxito.`, "success");
+
+        // Clear the form
+        productNameInput.value = "";
+        productDescriptionInput.value = "";
+        suggestedPriceInput.value = "";
+        affiliatePriceInput.value = "";
+        productImagesInput.value = ""; // Reset file input
+        document.getElementById('images-preview-container').innerHTML = ''; // Clear preview
+
+        loadProductsForMasterSupervisor(); // Refresh product list
+        if (loggedInUser.role === "affiliate") {
+            loadProductsForAffiliates();
+        }
+    }
+
+    // Event Listeners
+    loginButton.addEventListener("click", handleLogin);
+    createUserButton.addEventListener("click", handleCreateUser);
+    publishButton.addEventListener("click", handlePublishProduct);
+    viewUsersButton.addEventListener("click", loadUserList);
+    logoutButtons.forEach(button => {  // Attach event listener to each button
+        button.addEventListener("click", handleLogout);
+    });
+
+    productImagesInput.addEventListener('change', (event) => {
+        const files = event.target.files;
+        const previewContainer = document.getElementById('images-preview-container');
+        previewContainer.innerHTML = ''; // Clear previous previews
+
+        if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.classList.add('image-preview');
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    preview.appendChild(img);
+                    previewContainer.appendChild(preview);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+});
