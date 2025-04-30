@@ -9,7 +9,7 @@
     <style>
         .descripcion-producto {
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* Limitar a 2 líneas */
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -17,17 +17,58 @@
             display: inline-block;
             margin-right: 10px;
             margin-bottom: 10px;
-            width: 100px; /* Tamaño fijo para todas las imágenes */
+            width: 100px;
             height: 100px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            overflow: hidden; /* Recortar la imagen si es más grande */
+            overflow: hidden;
         }
         .image-preview img {
-            width: 100%; /* La imagen ocupa todo el contenedor */
+            width: 100%;
             height: 100%;
-            object-fit: cover; /* Escalar y recortar para llenar el contenedor */
+            object-fit: cover;
         }
+
+        #product-images {
+            /* Estilos para ocultar el input de tipo archivo por defecto */
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper {
+            position: relative; /* Para posicionar el input de archivo oculto */
+            display: inline-flex; /* Usar inline-flex para alinear elementos */
+            align-items: center;
+            background-color: #fff;
+            border: 2px solid #3b82f6; /* Color del borde del botón */
+            border-radius: 0.375rem; /* Redondeo del borde, equivalente a rounded-md */
+            padding: 0.5rem 1rem;      /* padding-2 y padding-4 */
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Transición suave del color de fondo */
+            overflow: hidden;          /* Asegura que el label no se desborde si el texto es largo */
+        }
+
+        .file-upload-wrapper:hover {
+            background-color: #f0f9ff; /* Color de fondo al pasar el mouse, un tono muy claro del azul */
+        }
+
+        .file-upload-text {
+            font-size: 0.875rem; /* text-sm */
+            color: #3b82f6;      /* text-blue-500 */
+            margin-right: 0.5rem;  /* mr-2 */
+        }
+
+        .file-upload-icon {
+            /* Usaremos un SVG como ícono, por lo que no necesitamos estilos de fuente */
+            width: 1rem;         /* w-4 */
+            height: 1rem;        /* h-4 */
+            /* El SVG se insertará directamente en el HTML */
+        }
+
     </style>
 </head>
 <body class="bg-gray-100 font-inter">
@@ -108,7 +149,14 @@
                     </div>
                     <div>
                         <label for="product-images" class="block text-gray-700 text-sm font-bold mb-2">Imágenes del Producto:</label>
-                        <input type="file" id="product-images" multiple accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <div class="file-upload-wrapper">
+                            <span class="file-upload-text">Seleccionar Archivos</span>
+                            <svg class="file-upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.125l-3 3m0 0l-3-3m3 3V16.5" />
+                            </svg>
+                            <input type="file" id="product-images" multiple accept="image/*">
+                        </div>
                         <div id="images-preview-container" class="mt-2 flex flex-wrap">
                             </div>
                     </div>
@@ -227,13 +275,13 @@
             const formMessage = document.getElementById("form-message");
             const viewUsersButton = document.getElementById("view-users-button");
             const userList = document.getElementById("user-list");
-            const logoutButtons = document.querySelectorAll(".logout-button"); // Selecciona todos los botones de logout
+            const logoutButtons = document.querySelectorAll(".logout-button");
             const randomProductList = document.getElementById("random-product-list");
             let loggedInUser = null;
-            const MAX_RANDOM_PRODUCTS = 5; // Máximo de productos aleatorios a mostrar
-            const publishedProducts = new Set();  // Track published product IDs
+            const MAX_RANDOM_PRODUCTS = 5;
+            const publishedProducts = new Set();
             const affiliatePublishedList = document.getElementById("affiliate-published-list");
-            const showPublishedProductsButton = document.getElementById("published-products-button"); //Boton NO EXISTE
+
 
             // Función para mostrar un mensaje
             function showMessage(element, message, type = "success") {
@@ -242,12 +290,11 @@
                 element.style.display = "block";
                 setTimeout(() => {
                     element.style.display = "none";
-                }, 3000); // El mensaje desaparece después de 3 segundos
+                }, 3000);
             }
 
-            // Función para renderizar la lista de productos
             function renderProductList(container, productsToRender, userRole = null) {
-                container.innerHTML = ""; // Limpiar el contenedor antes de renderizar
+                container.innerHTML = "";
                 productsToRender.forEach((product) => {
                     const productCard = document.createElement("div");
                     productCard.classList.add("bg-white", "rounded-lg", "shadow-md", "p-4", "flex", "flex-col", "transition-transform", "hover:scale-105");
@@ -255,10 +302,9 @@
                     const imageContainer = document.createElement("div");
                     imageContainer.classList.add("relative", "w-full", "h-48", "mb-4", "overflow-hidden", "rounded-md");
 
-                    // Mostrar la primera imagen o un mensaje si no hay imágenes
                     if (product.images && product.images.length > 0) {
                         const productImage = document.createElement("img");
-                        productImage.src = product.images[0]; // Mostrar la primera imagen
+                        productImage.src = product.images[0];
                         productImage.alt = product.name;
                         productImage.classList.add("object-cover", "w-full", "h-full");
                         imageContainer.appendChild(productImage);
@@ -298,14 +344,12 @@
                         publishButton.addEventListener("click", () => {
                             if (!publishedProducts.has(product.id)) {
                                 publishedProducts.add(product.id);
-                                 // Add to published list
                                 const listItem = document.createElement("li");
                                 listItem.textContent = product.name;
                                 affiliatePublishedList.appendChild(listItem);
                                 showMessage(formMessage, `Producto "${product.name}" publicado para tus clientes.`, "success");
-                               // Aquí puedes agregar lógica para mostrar el producto al cliente del afiliado
                             } else {
-                                 showMessage(formMessage, `Ya has publicado el producto "${product.name}" anteriormente.`, "error");
+                                showMessage(formMessage, `Ya has publicado el producto "${product.name}" anteriormente.`, "error");
                             }
                         });
                         productCard.appendChild(publishButton);
@@ -314,16 +358,14 @@
                 });
             }
 
-            // Función para cargar la lista de productos para master y supervisor
             function loadProductsForMasterSupervisor() {
                 const productsToDisplay = products.map(product => ({
                     ...product,
-                    images: product.images // Mantener las imágenes
+                    images: product.images
                 }));
                 renderProductList(productListContainer, productsToDisplay);
             }
 
-            // Función para cargar la lista de productos para afiliados
             function loadProductsForAffiliates() {
                 const productsToDisplay = products.map(product => ({
                     ...product,
@@ -332,19 +374,16 @@
                 renderProductList(affiliateProductList, productsToDisplay, "affiliate");
             }
 
-            // Función para obtener productos aleatorios
             function getRandomProducts() {
-                const shuffledProducts = [...products].sort(() => 0.5 - Math.random()); // Shuffle
-                return shuffledProducts.slice(0, Math.min(MAX_RANDOM_PRODUCTS, shuffledProducts.length)); // Get first 5 or less
+                const shuffledProducts = [...products].sort(() => 0.5 - Math.random());
+                return shuffledProducts.slice(0, Math.min(MAX_RANDOM_PRODUCTS, shuffledProducts.length));
             }
 
-            // Función para cargar productos aleatorios
             function loadRandomProducts() {
                 const randomProductsArray = getRandomProducts();
                 renderProductList(randomProductList, randomProductsArray);
             }
 
-            // Función para manejar el inicio de sesión
             function handleLogin() {
                 const username = usernameInput.value;
                 const password = passwordInput.value;
@@ -378,7 +417,6 @@
                 }
             }
 
-            // Función para crear un nuevo usuario (Solo para Master)
             function handleCreateUser() {
                 const newUsername = newUsernameInput.value;
                 const newPassword = newPasswordInput.value;
@@ -399,12 +437,12 @@
                 showMessage(userMessage, `Usuario "${newUsername}" creado con rol "${newRole}".`, "success");
                 newUsernameInput.value = "";
                 newPasswordInput.value = "";
-                newRoleSelect.value = "affiliate"; // Reset to default
-                loadUserList(); // Update user list
+                newRoleSelect.value = "affiliate";
+                loadUserList();
             }
 
             function loadUserList() {
-                userList.innerHTML = ""; // Clear the list
+                userList.innerHTML = "";
                 users.forEach(user => {
                     const listItem = document.createElement("li");
                     listItem.textContent = `${user.username} - ${user.role}`;
@@ -412,26 +450,22 @@
                 });
             }
 
-              // Función para manejar el cierre de sesión
             function handleLogout() {
-                loggedInUser = null; // Clear logged in user
-                loginForm.style.display = "block"; // Show login form
-                masterSupervisorPanel.style.display = "none"; // Hide panels
+                loggedInUser = null;
+                loginForm.style.display = "block";
+                masterSupervisorPanel.style.display = "none";
                 affiliatePanel.style.display = "none";
-                // Reset form fields (optional)
                 usernameInput.value = "";
                 passwordInput.value = "";
                 loginError.style.display = "none";
-                // Clear product lists
                 productListContainer.innerHTML = "";
                 affiliateProductList.innerHTML = "";
                 randomProductList.innerHTML = "";
-                 if (affiliatePublishedList) { //Check if the element exists
+                if (affiliatePublishedList) {
                      affiliatePublishedList.innerHTML = "";
                  }
             }
 
-            // Función para manejar la publicación de un producto
             function handlePublishProduct() {
                 const productName = productNameInput.value;
                 const productDescription = productDescriptionInput.value;
@@ -449,48 +483,46 @@
                     return;
                 }
 
-                const imageFiles = Array.from(productImages);  // Convert FileList to array
-                const imageNames = imageFiles.map(file => file.name); // Extract file names
+                const imageFiles = Array.from(productImages);
+                const imageNames = imageFiles.map(file => file.name);
 
                 const newProduct = {
                     name: productName,
                     description: productDescription,
                     suggestedPrice: suggestedPrice,
                     affiliatePrice: affiliatePrice,
-                    images: imageNames, // Store file names, not File objects
-                    id: String(Date.now()), // Simple unique ID
+                    images: imageNames,
+                    id: String(Date.now()),
                 };
 
-                products.push(newProduct); // Add to the products array
+                products.push(newProduct);
                 showMessage(formMessage, `Producto "${productName}" publicado con éxito.`, "success");
 
-                // Clear the form
                 productNameInput.value = "";
                 productDescriptionInput.value = "";
                 suggestedPriceInput.value = "";
                 affiliatePriceInput.value = "";
-                productImagesInput.value = ""; // Reset file input
-                document.getElementById('images-preview-container').innerHTML = ''; // Clear preview
+                productImagesInput.value = "";
+                document.getElementById('images-preview-container').innerHTML = '';
 
-                loadProductsForMasterSupervisor(); // Refresh product list
+                loadProductsForMasterSupervisor();
                 if (loggedInUser.role === "affiliate") {
                     loadProductsForAffiliates();
                 }
             }
 
-            // Event Listeners
             loginButton.addEventListener("click", handleLogin);
             createUserButton.addEventListener("click", handleCreateUser);
             publishButton.addEventListener("click", handlePublishProduct);
             viewUsersButton.addEventListener("click", loadUserList);
-            logoutButtons.forEach(button => {  // Attach event listener to each button
+            logoutButtons.forEach(button => {
                 button.addEventListener("click", handleLogout);
             });
 
             productImagesInput.addEventListener('change', (event) => {
                 const files = event.target.files;
                 const previewContainer = document.getElementById('images-preview-container');
-                previewContainer.innerHTML = ''; // Clear previous previews
+                previewContainer.innerHTML = '';
 
                 if (files && files.length > 0) {
                     for (let i = 0; i < files.length; i++) {
