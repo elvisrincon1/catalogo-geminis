@@ -33,13 +33,15 @@ const newUserRole = document.getElementById('new-role');
 const createUserButton = document.getElementById('create-user-button');
 const userMessage = document.getElementById('user-message');
 const userList = document.getElementById('user-list');
-const userListSection = document.getElementById('user-list-section');
+const viewUsersButton = document.getElementById('view-users-button');
+
 
 // Elementos del panel de afiliado
 const affiliateProductList = document.getElementById('affiliate-product-list');
 const publishedProductsList = document.getElementById('affiliate-published-list');
 const notPublishedProductsList = document.getElementById('random-product-list');
 const publishedProductsSection = document.getElementById('published-products');
+const logoutButton = document.getElementById('logout-button');
 
 
 // Funciones de utilidad
@@ -441,8 +443,24 @@ function loadUserList() {
     if (users.length > 0) {
         users.forEach(user => {
             const userItem = document.createElement('li');
-            userItem.className = 'py-2 border-b border-gray-200';
+            userItem.className = 'py-2 border-b border-gray-200 flex justify-between items-center';
             userItem.innerHTML = `<span class="font-semibold">${user.username}</span> - <span class="text-gray-600">${user.role}</span>`;
+
+             // Agregar botones de suspender y eliminar solo si el usuario logueado es master y no es el mismo usuario
+            if (loggedInUser.role === 'master' && loggedInUser.username !== user.username) {
+                const suspendButton = document.createElement('button');
+                suspendButton.textContent = 'Suspender';
+                suspendButton.className = 'bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm';
+                suspendButton.addEventListener('click', () => suspendUser(user.username));
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Eliminar';
+                deleteButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm';
+                deleteButton.addEventListener('click', () => deleteUser(user.username));
+
+                userItem.appendChild(suspendButton);
+                userItem.appendChild(deleteButton);
+            }
             userList.appendChild(userItem);
         });
         userListSection.style.display = 'block'; // Mostrar la sección
@@ -474,6 +492,7 @@ function createUser() {
         username: username,
         password: password,
         role: role,
+        status: 'active' // Agregamos el estado por defecto
     };
 
     users.push(newUser);
@@ -485,11 +504,50 @@ function createUser() {
     loadUserList();
 }
 
+/**
+ * Suspende un usuario
+ * @param {string} usernameToSuspend - El nombre de usuario del usuario a suspender.
+ */
+function suspendUser(usernameToSuspend) {
+    const userToSuspend = users.find(u => u.username === usernameToSuspend);
+    if (userToSuspend) {
+        userToSuspend.status = 'suspended';
+        saveUsers();
+        showMessage(`Usuario ${usernameToSuspend} suspendido.`, userMessage);
+        loadUserList(); // Recargar la lista para reflejar el cambio
+    } else {
+        showMessage('Usuario no encontrado.', userMessage, 'red');
+    }
+}
+
+/**
+ * Elimina un usuario
+ * @param {string} usernameToDelete - El nombre de usuario del usuario a eliminar.
+ */
+function deleteUser(usernameToDelete) {
+     if (loggedInUser.username === usernameToDelete) {
+        showMessage('No puedes eliminarte a ti mismo.', userMessage, 'red');
+        return;
+    }
+    const userToDeleteIndex = users.findIndex(u => u.username === usernameToDelete);
+    if (userToDeleteIndex !== -1) {
+        users.splice(userToDeleteIndex, 1);
+        saveUsers();
+        showMessage('Usuario eliminado con éxito.', userMessage);
+        loadUserList(); // Recargar la lista para reflejar el cambio
+    } else {
+        showMessage('Usuario no encontrado.', userMessage, 'red');
+    }
+}
+
 
 // Event listeners
 loginButton.addEventListener('click', login);
 publishButton.addEventListener('click', handlePublishProduct);
 createUserButton.addEventListener('click', createUser);
+logoutButton.addEventListener('click', logout);
+viewUsersButton.addEventListener('click', loadUserList);
+
 
 // Cargar datos iniciales
 const storedUser = localStorage.getItem('loggedInUser');
