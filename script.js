@@ -136,36 +136,36 @@ function login() {
 }
 
 /**
-* Carga los productos en la interfaz para Master y Supervisor.
-*/
+ * Carga los productos en la interfaz para Master y Supervisor.
+ */
 function loadProductsForMasterSupervisor() {
-    productList.innerHTML = '';
-    let productsToDisplay = products;
-    if (loggedInUser.role === 'supervisor') {
-        productsToDisplay = products.filter(p => p.uploadedBy === loggedInUser.username);
-    }
+    productList.innerHTML = '';
+    let productsToDisplay = products;
+    if (loggedInUser.role === 'supervisor') {
+        productsToDisplay = products.filter(p => p.uploadedBy === loggedInUser.username);
+    }
 
-    productsToDisplay.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.className = 'grid-item';
-        productCard.dataset.productId = product.id;
+    productsToDisplay.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'grid-item';
+        productCard.dataset.productId = product.id;
 
-        const imagesHtml = product.images.map(img => `<img src="${img}" alt="Producto" class="w-full h-32 object-cover rounded-md mb-2">`).join('');
+        // Generar HTML para las imágenes
+        const imagesHtml = product.images.map(img => `<img src="${img}" alt="Producto" class="w-full h-32 object-cover rounded-md mb-2">`).join('');
 
-
-        productCard.innerHTML = `
-                <h3 class="text-lg font-semibold text-gray-800 mb-2">${product.name}</h3>
-                ${imagesHtml}
-                <p class="text-gray-600 mb-1">Precio Sugerido: <span class="font-semibold">${product.suggestedPrice}</span></p>
-                <p class="text-gray-600 mb-1">Precio Afiliado: <span class="font-semibold">${product.affiliatePrice}</span></p>
-                <p class="text-gray-700 descripcion-producto mb-2">${product.description}</p>
-                <div class="flex justify-end gap-2">
-                    <button class="edit-button bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Editar</button>
-                    <button class="delete-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Borrar</button>
-                </div>
-            `;
-        productList.appendChild(productCard);
-    });
+        productCard.innerHTML = `
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">${product.name}</h3>
+            ${imagesHtml}
+            <p class="text-gray-600 mb-1">Precio Sugerido: <span class="font-semibold">${product.suggestedPrice}</span></p>
+            <p class="text-gray-600 mb-1">Precio Afiliado: <span class="font-semibold">${product.affiliatePrice}</span></p>
+            <p class="text-gray-700 descripcion-producto mb-2">${product.description}</p>
+            <div class="flex justify-end gap-2">
+                <button class="edit-button bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Editar</button>
+                <button class="delete-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline text-sm">Borrar</button>
+            </div>
+        `;
+        productList.appendChild(productCard);
+    });
 }
 
 /**
