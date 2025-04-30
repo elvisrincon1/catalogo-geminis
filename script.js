@@ -25,6 +25,7 @@ const imagesPreviewContainer = document.getElementById('images-preview-container
 // Elementos de la lista de productos (Master/Supervisor)
 const productList = document.getElementById('product-list');
 const productManagementSection = document.getElementById('product-management');
+const userManagementSection = document.getElementById('user-management'); // Asegúrate de que esta línea exista
 
 // Elementos de gestión de usuarios (Master/Supervisor)
 const newUserInput = document.getElementById('new-username');
@@ -107,8 +108,8 @@ function login() {
     const username = usernameInput.value.trim();
     const password = passwordInput.value.trim();
 
-    console.log('Intento de inicio de sesión con:', username, password); // NUEVO LOG
-    console.log('Usuarios disponibles:', users); // NUEVO LOG
+    console.log('Intento de inicio de sesión con:', username, password);
+    console.log('Usuarios disponibles:', users);
 
     const user = users.find(u => u.username === username && u.password === password);
     if (user) {
@@ -119,11 +120,7 @@ function login() {
             masterSupervisorPanel.style.display = 'block';
             affiliatePanel.style.display = 'none';
             loadProductsForMasterSupervisor();
-            if (loggedInUser.role === 'master') {
-                userManagementSection.style.display = 'block';
-            } else {
-                userManagementSection.style.display = 'none';
-            }
+            userManagementSection.style.display = 'block'; // Mostrar siempre para master y supervisor
         } else {
             masterSupervisorPanel.style.display = 'none';
             affiliatePanel.style.display = 'block';
@@ -141,14 +138,14 @@ function login() {
  * Carga los productos en la interfaz para Master y Supervisor.
  */
 function loadProductsForMasterSupervisor() {
-    console.log('Función loadProductsForMasterSupervisor llamada'); // NUEVO LOG
+    console.log('Función loadProductsForMasterSupervisor llamada');
     productList.innerHTML = '';
     let productsToDisplay = products;
     if (loggedInUser.role === 'supervisor') {
         productsToDisplay = products.filter(p => p.uploadedBy === loggedInUser.username);
     }
 
-    console.log('Productos a mostrar:', productsToDisplay); // NUEVO LOG
+    console.log('Productos a mostrar:', productsToDisplay);
 
     productsToDisplay.forEach(product => {
         const productCard = document.createElement('div');
@@ -431,15 +428,13 @@ publishButton.addEventListener('click', handlePublishProduct);
 const storedUser = localStorage.getItem('loggedInUser');
 if (storedUser) {
     loggedInUser = JSON.parse(storedUser);
-    console.log('Usuario logueado:', loggedInUser); // NUEVO LOG
+    console.log('Usuario logueado:', loggedInUser);
     loginSection.style.display = 'none';
     if (loggedInUser.role === 'master' || loggedInUser.role === 'supervisor') {
         masterSupervisorPanel.style.display = 'block';
         affiliatePanel.style.display = 'none';
         loadProductsForMasterSupervisor();
-        if (loggedInUser.role === 'master') {
-            userManagementSection.style.display = 'block';
-        }
+        userManagementSection.style.display = 'block'; // Mostrar siempre para master y supervisor
     } else {
         masterSupervisorPanel.style.display = 'none';
         affiliatePanel.style.display = 'block';
@@ -451,5 +446,5 @@ if (storedUser) {
     affiliatePanel.style.display = 'none';
 }
 
-console.log('Usuarios cargados:', users); // NUEVO LOG
-console.log('Productos cargados:', products); // NUEVO LOG
+console.log('Usuarios cargados:', users);
+console.log('Productos cargados:', products);
