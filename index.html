@@ -30,7 +30,6 @@
         }
 
         #product-images {
-            /* Estilos para ocultar el input de tipo archivo por defecto */
             opacity: 0;
             position: absolute;
             width: 100%;
@@ -67,7 +66,6 @@
             height: 1rem;
         }
 
-        /* Nuevos estilos para mejorar el diseño responsivo */
         .container {
             max-width: 1200px;
             margin-left: auto;
@@ -90,7 +88,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease-in-out;
-            height: 100%; /* Asegura que todas las tarjetas tengan la misma altura */
+            height: 100%;
         }
 
         .card:hover {
@@ -107,7 +105,7 @@
         .card-description {
             color: #666;
             margin-bottom: 0.75rem;
-            flex-grow: 1; /* Permite que la descripción se expanda para llenar el espacio */
+            flex-grow: 1;
         }
 
         .price {
@@ -152,6 +150,36 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .copy-button {
+            background-color: #3b82f6;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .copy-button:hover {
+            background-color: #2563eb;
+        }
+
+        .download-images-button {
+            background-color: #10b981;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 0.5rem;
+        }
+
+        .download-images-button:hover {
+            background-color: #059669;
         }
 
     </style>
@@ -294,7 +322,7 @@
         const products = [
             {
                 name: "Producto 1",
-                description: "Descripción del Producto 1",
+                description: "Descripción del Producto 1. Esto es un ejemplo de una descripción más larga para mostrar cómo se adapta el diseño.",
                 suggestedPrice: 100,
                 affiliatePrice: 80,
                 images: ["imagen1.jpg", "imagen2.jpg"],
@@ -316,9 +344,9 @@
                 images: ["imagen5.jpg"],
                 id: "3",
             },
-            {
+             {
                 name: "Producto 4",
-                description: "Descripción del Producto 4",
+                description: "Descripción del Producto 4. Esto es un ejemplo de una descripción más larga para mostrar cómo se adapta el diseño.",
                 suggestedPrice: 250,
                 affiliatePrice: 200,
                 images: ["imagen6.jpg"],
@@ -416,11 +444,44 @@
                     affiliatePrice.classList.add("text-green-600", "font-semibold", "mb-4");
                     affiliatePrice.textContent = `Precio para Afiliado: $${product.affiliatePrice}`;
 
+                    const copyDescriptionButton = document.createElement("button");
+                    copyDescriptionButton.classList.add("copy-button");
+                    copyDescriptionButton.textContent = "Copiar Descripción";
+                    copyDescriptionButton.addEventListener("click", () => {
+                        navigator.clipboard.writeText(product.description).then(() => {
+                            showMessage(formMessage, "Descripción copiada al portapapeles", "success");
+                        }).catch(err => {
+                            showMessage(formMessage, "Error al copiar descripción", "error");
+                        });
+                    });
+
+                    const downloadImagesButton = document.createElement("button");
+                    downloadImagesButton.classList.add("download-images-button");
+                    downloadImagesButton.textContent = "Descargar Imágenes";
+                    downloadImagesButton.addEventListener("click", () => {
+                        if (product.images && product.images.length > 0) {
+                            product.images.forEach((imageName, index) => {
+                                // Simular la descarga de la imagen (esto no esuna descarga real desde el servidor)
+                                const link = document.createElement('a');
+                                link.href = imageName;
+                                link.download = `imagen${index + 1}.jpg`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            });
+                            showMessage(formMessage, "Imágenes simuladas para descargar", "success");
+                        } else {
+                            showMessage(formMessage, "No hay imágenes para descargar", "error");
+                        }
+                    });
+
                     productCard.appendChild(imageContainer);
                     productCard.appendChild(productName);
                     productCard.appendChild(productDescription);
                     productCard.appendChild(suggestedPrice);
                     productCard.appendChild(affiliatePrice);
+                    productCard.appendChild(copyDescriptionButton);
+                    productCard.appendChild(downloadImagesButton);
 
                     if (userRole === "affiliate") {
                         const publishButton = document.createElement("button");
@@ -434,7 +495,7 @@
                                 affiliatePublishedList.appendChild(listItem);
                                 showMessage(formMessage, `Producto "${product.name}" publicado para tus clientes.`, "success");
                             } else {
-                                showMessage(formMessage, `Ya has publicado el producto "${product.name}" anteriormente.`, "error");
+                                 showMessage(formMessage, `Ya has publicado el producto "${product.name}" anteriormente.`, "error");
                             }
                         });
                         productCard.appendChild(publishButton);
@@ -459,7 +520,7 @@
                 renderProductList(affiliateProductList, productsToDisplay, "affiliate");
             }
 
-            function getRandomProducts() {
+             function getRandomProducts() {
                 const shuffledProducts = [...products].sort(() => 0.5 - Math.random());
                 return shuffledProducts.slice(0, Math.min(MAX_RANDOM_PRODUCTS, shuffledProducts.length));
             }
@@ -502,7 +563,7 @@
                 }
             }
 
-            function handleCreateUser() {
+             function handleCreateUser() {
                 const newUsername = newUsernameInput.value;
                 const newPassword = newPasswordInput.value;
                 const newRole = newRoleSelect.value;
@@ -547,8 +608,8 @@
                 affiliateProductList.innerHTML = "";
                 randomProductList.innerHTML = "";
                 if (affiliatePublishedList) {
-                     affiliatePublishedList.innerHTML = "";
-                 }
+                    affiliatePublishedList.innerHTML = "";
+                }
             }
 
             function handlePublishProduct() {
@@ -570,6 +631,7 @@
 
                 const imageFiles = Array.from(productImages);
                 const imageNames = imageFiles.map(file => file.name);
+
 
                 const newProduct = {
                     name: productName,
